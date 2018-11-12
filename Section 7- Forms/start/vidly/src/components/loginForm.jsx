@@ -1,52 +1,66 @@
 import React, { Component } from "react";
+import Joi from "joi-browser";
+
+import Input from "./common/input";
 
 class LoginForm extends Component {
   state = {
     account: {
       username: "",
       password: ""
-    }
+    },
+    errors: {}
+  };
+
+  schema = {
+    username: Joi.string().required(),
+    password: Joi.string().required()
   };
   handleSubmit = e => {
+    const { account } = this.state;
     e.preventDefault();
-    console.log("submitted");
+    Joi.validate(account, this.schema, {
+      abortEarly: false
+    }).then(
+      e => console.log(e),
+      err => {
+        let errors = err.details.reduce((prev, current) => {
+          debugger;
+          console.log(current);
+          return current;
+        }, {});
+      }
+    );
   };
 
   handleChange = e => {
     let account = { ...this.state.account };
-    console.log(e.currentTarget.value);
     account[e.currentTarget.name] = e.currentTarget.value;
     this.setState({ account });
   };
+
   render() {
+    const { account } = this.state;
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="username">Email address</label>
-            <input
-              type="text"
-              className="form-control"
-              id="username"
-              name="username"
-              aria-describedby="emailHelp"
-              placeholder="Enter email"
-              value={this.state.account.username}
-              onChange={this.handleChange}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              className="form-control"
-              id="exampleInputPassword1"
-              name="password"
-              placeholder="Password"
-              value={this.state.account.password}
-              onChange={this.handleChange}
-            />
-          </div>
+          <Input
+            label="Username"
+            type="text"
+            id="username"
+            name="username"
+            value={account.username}
+            onChange={this.handleChange}
+          />
+          <Input
+            label="Password"
+            type="password"
+            id="password"
+            name="password"
+            value={account.password}
+            onChange={this.handleChange}
+          />
+
           <button type="submit" className="btn btn-primary">
             Submit
           </button>
