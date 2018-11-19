@@ -24,8 +24,6 @@ class App extends Component {
 
     const posts = [post, ...this.state.posts];
     this.setState({ posts });
-
-    console.log(this.state.posts);
   };
 
   handleUpdate = async post => {
@@ -39,10 +37,22 @@ class App extends Component {
   };
 
   handleDelete = async post => {
-    await axios.delete(`${this.url}/${post.id}`);
+    const originalPosts = [...this.state.posts];
 
-    const posts = this.state.posts.filter(_post => post.id !== _post.id);
-    this.setState({ posts });
+    try {
+      await axios.delete(`s${this.url}/${post.id}`);
+      const posts = this.state.posts.filter(_post => post.id !== _post.id);
+      this.setState({ posts });
+    } catch (error) {
+      debugger;
+      if (error.response && error.response.status === 404) {
+        alert("this post has already been deleted");
+      } else {
+        console.log(`unexpected error: ${error}`);
+        alert("an unexpected error occured");
+      }
+      this.setState({ posts: originalPosts });
+    }
   };
 
   render() {
