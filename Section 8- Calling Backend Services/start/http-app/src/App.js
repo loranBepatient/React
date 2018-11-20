@@ -3,14 +3,24 @@ import React, { Component } from "react";
 import axios from "axios";
 import "./App.css";
 
+const url = "https://jsonplaceholder.typicode.com/posts";
+axios.interceptors.response(null, error => {
+  const expectedError =
+    error.response &&
+    error.response.status >= 400 &&
+    error.response.status <= 500;
+
+  if (!expectedError) {
+    console.log("Logging the error", err);
+  }
+});
 class App extends Component {
-  url = "https://jsonplaceholder.typicode.com/posts";
   state = {
     posts: []
   };
 
   async componentDidMount() {
-    const { data: posts } = await axios.get(this.url);
+    const { data: posts } = await axios.get(url);
     this.setState({ posts });
   }
 
@@ -20,7 +30,7 @@ class App extends Component {
       body: "new post content"
     };
 
-    const { data: post } = await axios.post(this.url, newPost);
+    const { data: post } = await axios.post(url, newPost);
 
     const posts = [post, ...this.state.posts];
     this.setState({ posts });
@@ -28,7 +38,7 @@ class App extends Component {
 
   handleUpdate = async post => {
     post.title = "updated title";
-    await axios.put(`${this.url}/${post.id}`, post);
+    await axios.put(`${url}/${post.id}`, post);
 
     const posts = [...this.state.posts];
     const index = posts.indexOf(post.id);
@@ -40,7 +50,7 @@ class App extends Component {
     const originalPosts = [...this.state.posts];
 
     try {
-      await axios.delete(`s${this.url}/${post.id}`);
+      await axios.delete(`s${url}/${post.id}`);
       const posts = this.state.posts.filter(_post => post.id !== _post.id);
       this.setState({ posts });
     } catch (error) {
