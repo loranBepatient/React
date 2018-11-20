@@ -41,7 +41,7 @@ class App extends Component {
     const originalPosts = [...this.state.posts];
 
     try {
-      await http.delete(`${apiEndpoint}/${post.id}`);
+      await http.delete(`s${apiEndpoint}/${post.id}`);
       const posts = this.state.posts.filter(_post => post.id !== _post.id);
       this.setState({ posts });
     } catch (error) {
