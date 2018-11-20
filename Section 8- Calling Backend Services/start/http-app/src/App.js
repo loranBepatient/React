@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import http from "./services/httpService";
+import config from "./config.json";
 
 import "./App.css";
 
-const apiEndpoint = "https://jsonplaceholder.typicode.com/posts";
-
+const apiEndpoint = config.apiEndpoint;
 class App extends Component {
   state = {
     posts: []
