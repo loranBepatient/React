@@ -1,11 +1,30 @@
 import httpService from "../services/httpService";
+import config from "../config.json";
 
-export function getMovies(apiEndpoint) {
-  return httpService.get(apiEndpoint);
+const apiEndpoint = `${config.apiEndpoint}/movies`;
+
+const movieUrl = id => {
+  if (id) return `${apiEndpoint}/${id}`;
+  return `${apiEndpoint}`;
+};
+export function getMovies() {
+  return httpService.get(movieUrl());
 }
 
 export function deleteMovie(id) {
-  //   let movieInDb = movies.find(m => m._id === id);
-  //   movies.splice(movies.indexOf(movieInDb), 1);
-  //   return movieInDb;
+  return httpService.delete(movieUrl(id));
+}
+
+export function getMovie(id) {
+  return httpService.get(movieUrl(id));
+}
+
+export function saveMovie(movie) {
+  if (movie._id) {
+    const body = { ...movie };
+    delete body._id;
+    httpService.put(movieUrl(movie._id), body);
+  } else {
+    httpService.post(movieUrl(), movie);
+  }
 }

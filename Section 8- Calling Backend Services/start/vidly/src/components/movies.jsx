@@ -11,7 +11,6 @@ import _ from "lodash";
 import SearchBox from "./searchBox";
 
 class Movies extends Component {
-  endPoint = "http://localhost:3900/api";
   state = {
     movies: [],
     genres: [],
@@ -23,17 +22,24 @@ class Movies extends Component {
   };
 
   async componentDidMount() {
-    const { data: genresData } = await getGenres(`${this.endPoint}/genres`);
-    const { data: movies } = await getMovies(`${this.endPoint}/movies`);
+    const { data: genresData } = await getGenres();
+    const { data: movies } = await getMovies();
     const genres = [{ _id: "", name: "All Genres" }, ...genresData];
     this.setState({ movies, genres });
   }
 
-  handleDelete = movie => {
+  handleDelete = async movie => {
+    const originalMovies = [...this.state.movies];
     const movies = this.state.movies.filter(m => m._id !== movie._id);
     this.setState({ movies });
-
-    deleteMovie(movie._id);
+    try {
+      await deleteMovie(movie._id);
+    } catch (error) {
+      if (error.message && error.status === 404) {
+        alert(`${movie["title"]} has already been deleted`);
+      }
+      this.setState({ movies: originalMovies });
+    }
   };
 
   handleLike = movie => {
