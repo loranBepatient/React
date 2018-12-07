@@ -1,7 +1,7 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/form";
-import * as userService from "../services/userService";
+import { register } from "../services/userService";
 
 class RegisterForm extends Form {
   state = {
@@ -27,7 +27,9 @@ class RegisterForm extends Form {
     console.log("Submitted");
     const { data: user } = this.state;
     try {
-      await userService.register(user);
+      const response = await register(user);
+      localStorage.setItem("token", response.headers["x-auth-token"]);
+      this.props.history.push("/");
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         const errors = { ...this.state.errors };
